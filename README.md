@@ -36,31 +36,49 @@ The component repo will have following structure:
 amitu/team:
 - elm.json
 - App.elm
-- schema.link
+- elma.json
 ```
 
-`schema.link` file must point an existing schema. Schemas are managed by fifthtry for now.
+`elma.json`:
+
+```json
+{
+    "schema": "schema-for-this-elma",
+    "kind": "helma | nelma etc"
+}
+```
+
+Schemas are managed by fifthtry for now.
 
 Compiler will inject `Main.elm` and `Fifthtry.elm` (part of this repo) next to "elm.json", and run elm-make on it.
 
-`Main.elm` imports `App` and calls `App.app` which must return a `Fifthtry.App`:
+For "helma" and "nelma", `Main.elm` imports `App` and calls `App.app` which must return a `Fifthtry.App`:
 
 ```elm
+-- helma:
 
-type alias Helma config =
-    { config : JD.Decoder config
-    , view : In -> config -> Fifthtry.Html msg
+
+type alias App =
+    { view : Fifthtry.In -> Fifthtry.Config -> Fifthtry.Html msg
     }
 
-type alias Nelma config model msg =
-    { config : JD.Decoder config
-    , init : In -> config -> ( model, Fifthtry.Cmd msg )
-    , update : In -> msg -> model -> ( model, Fifthtry.Cmd Msg msg )
-    , subscriptions : In -> model -> Fifthtry.Sub msg
-    , view : In -> model -> Fifthtry.Html msg
+
+-- nelma:
+
+
+type alias App model msg =
+    { init : Fifthtry.In -> Fifthtry.Config -> ( model, Fifthtry.Cmd msg )
+    , update : Fifthtry.In -> msg -> model -> ( model, Fifthtry.Cmd Msg msg )
+    , subscriptions : Fifthtr.In -> model -> Fifthtry.Sub msg
+    , view : Fifthtry.In -> model -> Fifthtry.Html msg
     }
 ```
 
+The `Fifthtry.Config` type will depend on `schema` key on `elma.json`.
+
 `Fifthtry.Cmd`, `Fifthtry.Sub` and `Fifthtry.Html` are "safe" commands, subscription and html that is allowed (no network request allowed, no port stuff etc).
 
-WIP.
+In case of `welma`, instead of `App.elm`, app must provide two files: `Reader.elm` and `Writer.elm`. Reader and Writer uses the same `Fifthtry.App` as `nelma`. Writer gets access to following `Fifthtry.Cmd` constructor: `Fifthtry.Content : Config -> Fifthtry.Cmd msg`. This must be called by writer whenever the content changes.
+
+In case of `celma`, the same `App` as in case of `Nelma` will be used.
+
