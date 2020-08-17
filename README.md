@@ -59,7 +59,7 @@ For "helma" and "nelma", `Main.elm` imports `App` and calls `App.app` which must
 
 
 type alias App =
-    { view : Fifthtry.In -> Fifthtry.Config -> Fifthtry.Html msg
+    { view : Fifthtry.In -> Fifthtry.Config -> Fifthtry.Html
     }
 
 
